@@ -14,7 +14,7 @@ Statically linked against libkextrw and libSimplePatchFinder (https://github.com
 Dynamically linked against cpp standard library.
 
 # How it works
-Its calling `_sandbox_suspend symbol` from the kernel.
+Its calling `_sandbox_suspend` symbol from the kernel.
 
 # Limitations
 Unfortunately when the sandbox of an app is disabled and you close the app, next time you open it, it will not launch and instead get stuck on the bouncing animation. This issue is fixed after rebooting. Alternatively launching the app from the terminal is a workaround.
