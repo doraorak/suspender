@@ -18,3 +18,5 @@ Its calling `_sandbox_suspend` symbol from the kernel.
 
 # Limitations
 Unfortunately when the sandbox of an app is disabled and you close the app, next time you open it, it will not launch and instead get stuck on the bouncing animation. This issue is fixed after rebooting. Alternatively launching the app from the terminal is a workaround.
+
+edit: Logging out of the current user (via the apple logo menu) and logging back in also fixes the issue.
