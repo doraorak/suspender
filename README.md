@@ -10,7 +10,7 @@ Installing KextRW (https://github.com/alfiecg24/KextRW) kext.
 `suspender <pid>`
 
 # Library dependencies
-Statically linked against libkextrw and libSimplePatchFinder (https://github.com/doraorak/simplePatchFinder).
+Statically linked against libkextrw and libsimplePatchFinder (https://github.com/doraorak/simplePatchFinder).
 Dynamically linked against cpp standard library.
 
 # How it works
