@@ -25,10 +25,7 @@ size_t mapping_count = 0;
 uint64_t find_fileset_header(uint64_t start_addr);
 uint64_t fileset_find_kext_addr(void *kc_base, const char *kext_id);
 
-typedef void (^segment_block_t)(struct segment_command_64 *segment, bool *stop);
 typedef void (^section_block_t)(struct section_64 *section, bool *stop);
-    
-void for_each_segment(struct mach_header_64 *header, segment_block_t block);
 void for_each_section(struct mach_header_64 *header, section_block_t block);
 
 uint64_t kernelBase = 0;
@@ -93,9 +90,10 @@ int main(int argc, const char * argv[]) {
     struct mach_header_64 header = {};
     kreadbuf(kernelBase, &header, sizeof(struct mach_header_64));
     
-    uint64_t* buffer = (uint64_t*)malloc(header.sizeofcmds);
-    kreadbuf(kernelBase, buffer, header.sizeofcmds);
-    
+    size_t totalSize = sizeof(struct mach_header_64) + header.sizeofcmds;
+    uint64_t* buffer = (uint64_t*)malloc(totalSize);
+    kreadbuf(kernelBase, buffer, totalSize);
+
     struct mach_header_64* kernel_mh = (struct mach_header_64*)buffer;
     
     fix_kernel_addresses(kernel_mh);
@@ -132,16 +130,18 @@ int main(int argc, const char * argv[]) {
     uint64_t fileset = find_fileset_header(kernelBase);
     kreadbuf(fileset, &header, sizeof(struct mach_header_64));
     
-    buffer = (uint64_t*)malloc(header.sizeofcmds);
-    kreadbuf(fileset, buffer, header.sizeofcmds);
+    totalSize = sizeof(struct mach_header_64) + header.sizeofcmds;
+    buffer = (uint64_t*)malloc(totalSize);
+    kreadbuf(fileset, buffer, totalSize);
     
     struct mach_header_64* kernelcache_mh = (struct mach_header_64*)buffer;
     
     uint64_t sandboxKext = fileset_find_kext_addr(kernelcache_mh, "com.apple.security.sandbox");
     kreadbuf(sandboxKext, &header, sizeof(struct mach_header_64));
     
-    buffer = (uint64_t*)malloc(header.sizeofcmds);
-    kreadbuf(sandboxKext, buffer, header.sizeofcmds);
+    totalSize = sizeof(struct mach_header_64) + header.sizeofcmds;
+    buffer = (uint64_t*)malloc(totalSize);
+    kreadbuf(sandboxKext, buffer, totalSize);
     
     struct mach_header_64* sandbox_mh = (struct mach_header_64*)buffer;
     fix_kernel_addresses(sandbox_mh);

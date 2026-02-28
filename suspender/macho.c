@@ -54,41 +54,7 @@ uint64_t fileset_find_kext_addr(void *kc_base, const char *kext_id) {
     return 0;
 }
 
-typedef void (^segment_block_t)(struct segment_command_64 *segment, bool *stop);
 typedef void (^section_block_t)(struct section_64 *section, bool *stop);
-
-void for_each_segment(struct mach_header_64 *header, segment_block_t block) {
-    if (!header || !block) return;
-
-    bool stop = false;
-
-    const uint8_t *cursor = (const uint8_t *)header +
-                            (header->magic == MH_MAGIC_64 || header->magic == MH_CIGAM_64
-                             ? sizeof(struct mach_header_64)
-                             : sizeof(struct mach_header));
-
-    for (uint32_t i = 0; i < header->ncmds; i++) {
-        const struct load_command *loadCmd = (const struct load_command *)cursor;
-
-        if (header->magic == MH_MAGIC_64 || header->magic == MH_CIGAM_64) {
-            if (loadCmd->cmd == LC_SEGMENT_64) {
-                const struct segment_command_64 *seg =
-                    (const struct segment_command_64 *)loadCmd;
-                block((struct segment_command_64 *)seg, &stop);
-                if (stop) return;
-            }
-        } else {
-            if (loadCmd->cmd == LC_SEGMENT) {
-                const struct segment_command *seg =
-                    (struct segment_command *)loadCmd;
-                block(seg, &stop);
-                if (stop) return;
-            }
-        }
-
-        cursor += loadCmd->cmdsize;
-    }
-}
 
 void for_each_section(struct mach_header_64 *header, section_block_t block) {
     if (!header || !block) return;
